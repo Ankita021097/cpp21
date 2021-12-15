@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+     <!-- Include the PayPal JavaScript SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
     <title>Document</title>
     
 </head>
@@ -20,11 +22,7 @@
              
              </ul>
            
-           
-           
-           
-           
-       </div>
+            </div>
    </div>
    
    <div class ="row">
@@ -71,6 +69,42 @@
     </div>
   </div>
   <button type="submit" class="btn btn-primary">Place Order</button>
+  
+  <div id="paypal-button-container"></div>
+    <script>
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+
+            // Set up the transaction
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '88.44'
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(orderData) {
+                    // Successful capture! For demo purposes:
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                    var transaction = orderData.purchase_units[0].payments.captures[0];
+                    alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+
+                    // Replace the above to show a success message within this page, e.g.
+                    // const element = document.getElementById('paypal-button-container');
+                    // element.innerHTML = '';
+                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+                });
+            }
+
+
+        }).render('#paypal-button-container');
+    </script>
 </form>
            
        </div>
@@ -85,13 +119,21 @@ if(localStorage.getItem('cart')==null){
 else{
     cart = JSON.parse(localStorage.getItem('cart'));
     }
-
+let total = 0;
 for(item in cart){
 let name = cart[item][1];
 let quantity = cart[item][0];
-itemString = `<li class="list-group-item">${name}-${quantity}</li>`
+let price = cart[item][2];
+total = total + cart[item][2];
+
+itemString = `  <li class="list-group-item d-flex justify-content-between align-items-center">${name} of ${quantity}<span class="badge badge-warning badge-pill">${price}</span></li>`;
+
+
 $('#item_list').append(itemString);
 }
+totalPrice = ` <li class ="list-group-item d-flex justify-content-between align-items-center"><b> Your total </b>
+${total}</li> `
+$('#item_list').append(totalPrice);
 $('#items').val(JSON.stringify(cart));
 
 

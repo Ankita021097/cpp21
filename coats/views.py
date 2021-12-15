@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Product,Orders
 
+
 # Create your views here.
  
 def index(request):
@@ -28,11 +29,10 @@ def checkout(request):
         city = request.POST.get('city',"")
         state =request.POST.get('state',"")
         zipcode = request.POST.get('zipcode',"")
+        total = request.POST.get('total',"")
         
-        order = Orders(items=items,name=name,email=email,address=address,city=city,state=state,zipcode=zipcode)
+        order = Orders(items=items,name=name,email=email,address=address,city=city,state=state,zipcode=zipcode,total=total)
         order.save()
         
-        print('1234')
-        
       return render(request,'coats/checkout.html')
-    
+      

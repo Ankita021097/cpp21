@@ -20,6 +20,7 @@ class Orders(models.Model):
     city = models.CharField(max_length=200)
     state = models.CharField(max_length=200)
     zipcode = models.CharField(max_length=200)
+    total = models.CharField(max_length=200)
     
     
     
